@@ -21,15 +21,8 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/SmartLogisMsa/common-module")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 ext {
@@ -37,7 +30,7 @@ ext {
 }
 
 dependencies {
-    implementation 'com.smartlogis:common-module:0.0.4'
+    implementation 'com.github.smartlogismsa:common-module:0.0.2'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
@@ -59,13 +52,13 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
     runtimeOnly 'org.postgresql:postgresql'
-    implementation "io.github.openfeign.querydsl:querydsl-jpa:5.6.1:jakarta"
-    implementation "io.github.openfeign.querydsl:querydsl-core:5.6.1"
-
-    annotationProcessor "io.github.openfeign.querydsl:querydsl-apt:5.6.1:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
+//    implementation "io.github.openfeign.querydsl:querydsl-jpa:5.6.1:jakarta"
+//    implementation "io.github.openfeign.querydsl:querydsl-core:5.6.1"
+//
+//    annotationProcessor "io.github.openfeign.querydsl:querydsl-apt:5.6.1:jakarta"
+//    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+//    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit'
 
