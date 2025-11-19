@@ -38,4 +38,11 @@ public class Hub extends AbstractEntity {
         this.location = location;
         this.status = status;
     }
+
+    public void update(String name, UUID managerId, HubLocation location, HubStatus status) {
+        this.name = name;
+        this.managerId = managerId;
+        this.location = location;
+        this.status = status;
+    }
 }
