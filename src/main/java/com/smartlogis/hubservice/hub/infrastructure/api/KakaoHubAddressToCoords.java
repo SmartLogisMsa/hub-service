@@ -1,7 +1,6 @@
 package com.smartlogis.hubservice.hub.infrastructure.api;
 
 import com.smartlogis.hubservice.hub.domain.HubAddressToCoords;
-import com.smartlogis.hubservice.hub.domain.exception.HubAddressInvalidException;
 import com.smartlogis.hubservice.hub.domain.exception.HubCoordinateNotFoundException;
 import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
 import com.smartlogis.hubservice.hub.infrastructure.api.dto.KakaoGeocodeResponse;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.List;
 
 @ResponseStatus
@@ -56,7 +54,7 @@ public class KakaoHubAddressToCoords implements HubAddressToCoords {
                 );
             }
 
-            KakaoGeocodeResponse.Document first = body.documents().get(0);
+            KakaoGeocodeResponse.Document first = body.documents().getFirst();
 
             double latitude = Double.parseDouble(first.y());
             double longitude = Double.parseDouble(first.x());
