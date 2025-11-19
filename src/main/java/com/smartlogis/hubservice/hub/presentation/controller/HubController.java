@@ -6,6 +6,7 @@ import com.smartlogis.hubservice.hub.presentation.dto.HubCreateRequest;
 import com.smartlogis.hubservice.hub.presentation.dto.HubResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,8 +18,11 @@ public class HubController {
     private final HubCreateService hubCreateService;
 
     @PostMapping
-    public ApiResponse<HubResponse> createHub(@RequestBody HubCreateRequest request) {
+    public ResponseEntity<ApiResponse<HubResponse>> createHub(@RequestBody HubCreateRequest request) {
+
         HubResponse response = hubCreateService.create(request);
-        return ApiResponse.successWithDataOnly(response);
+
+        return ResponseEntity
+                .ok(ApiResponse.successWithDataOnly(response));
     }
 }
