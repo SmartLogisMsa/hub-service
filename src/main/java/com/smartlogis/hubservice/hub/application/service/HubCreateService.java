@@ -27,18 +27,12 @@ public class HubCreateService {
     public HubResponse create(HubCreateRequest request) {
         UUID managerId = UUID.fromString(request.managerId());
 
-        // 1. 주소 → 좌표 변환
         List<Double> coords = addressToCoords.convert(request.address());
-        if (coords.isEmpty()) {
-            throw new IllegalArgumentException("주소 변환 실패");
-        }
         double lat = coords.get(0);
         double lon = coords.get(1);
 
-        // 2. VO 생성
         HubLocation location = new HubLocation(request.address(), lat, lon);
 
-        // 3. 엔티티 생성
         Hub hub = new Hub(
                 HubId.newId(),
                 managerId,
@@ -47,10 +41,8 @@ public class HubCreateService {
                 request.status()
         );
 
-        // 4. 저장
         Hub saved = hubRepository.save(hub);
 
-        // 5. Response 변환
         return new HubResponse(
                 saved.getId().getId(),
                 saved.getManagerId(),

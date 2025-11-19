@@ -1,6 +1,9 @@
 package com.smartlogis.hubservice.hub.infrastructure.api;
 
 import com.smartlogis.hubservice.hub.domain.HubAddressToCoords;
+import com.smartlogis.hubservice.hub.domain.exception.HubAddressInvalidException;
+import com.smartlogis.hubservice.hub.domain.exception.HubCoordinateNotFoundException;
+import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
 import com.smartlogis.hubservice.hub.infrastructure.api.dto.KakaoGeocodeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,8 +50,10 @@ public class KakaoHubAddressToCoords implements HubAddressToCoords {
             KakaoGeocodeResponse body = response.getBody();
 
             if (body == null || body.documents() == null || body.documents().isEmpty()) {
-                log.warn("[KakaoHubAddressToCoords] 검색 결과 없음: {}", address);
-                return Collections.emptyList();
+                throw new HubCoordinateNotFoundException(
+                        HubMessageCode.HUB_COORDINATE_NOT_FOUND,
+                        address
+                );
             }
 
             KakaoGeocodeResponse.Document first = body.documents().get(0);
@@ -58,9 +63,9 @@ public class KakaoHubAddressToCoords implements HubAddressToCoords {
 
             return List.of(latitude, longitude);
 
-        } catch (Exception e) {
-            log.error("[KakaoHubAddressToCoords] API 호출 실패: {}", e.getMessage());
-            return Collections.emptyList();
+        }   catch (Exception e) {
+            log.error("[Kakao API 오류] {}", e.getMessage());
+            throw e;
         }
     }
 }
