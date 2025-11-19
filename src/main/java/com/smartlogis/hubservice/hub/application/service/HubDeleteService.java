@@ -3,6 +3,8 @@ package com.smartlogis.hubservice.hub.application.service;
 import com.smartlogis.hubservice.hub.domain.Hub;
 import com.smartlogis.hubservice.hub.domain.HubId;
 import com.smartlogis.hubservice.hub.domain.HubRepository;
+import com.smartlogis.hubservice.hub.domain.HubStatus;
+import com.smartlogis.hubservice.hub.domain.exception.HubCannotDeleteActiveException;
 import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
 import com.smartlogis.hubservice.hub.domain.exception.HubNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,12 @@ public class HubDeleteService {
     @CacheEvict(value = "hub", key = "#id")
     public void delete(String id) {
 
-        Hub hub = hubRepository.findById(HubId.of(UUID.fromString(id)))
+        Hub hub = hubRepository.findByIdAndDeletedAtIsNull(HubId.of(UUID.fromString(id)))
                 .orElseThrow(() -> new HubNotFoundException(HubMessageCode.HUB_NOT_FOUND));
+
+        if (hub.getStatus() == HubStatus.ACTIVE) {
+            throw new HubCannotDeleteActiveException(HubMessageCode.HUB_CANNOT_DELETE_ACTIVE);
+        }
 
         hub.softDelete();
         hubRepository.save(hub);

@@ -24,7 +24,7 @@ public class HubUpdateService {
     @CacheEvict(value = "hub", key = "#id")
     public HubResponse update(String id, HubUpdateRequest request) {
 
-        Hub hub = hubRepository.findById(HubId.of(UUID.fromString(id)))
+        Hub hub = hubRepository.findByIdAndDeletedAtIsNull(HubId.of(UUID.fromString(id)))
                 .orElseThrow(() -> new HubNotFoundException(HubMessageCode.HUB_NOT_FOUND));
 
         UUID managerId = UUID.fromString(request.managerId());
