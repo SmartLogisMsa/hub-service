@@ -5,13 +5,16 @@ server:
 spring:
   application:
     name: hub-service
-  config:
-    import: 'optional:configserver:'
   cloud:
     config:
-      discovery:
-        enabled: true
-        service-id: config-server
+      enabled: false
+#  config:
+#    import: 'optional:configserver:'
+#  cloud:
+#    config:
+#      discovery:
+#        enabled: true
+#        service-id: config-server
 
   data:
     redis:
@@ -46,4 +49,8 @@ eureka:
 gpr:
   username: ${GITHUB_ACTOR}
   token: ${GH_PAT}
+
+
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY}
 

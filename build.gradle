@@ -30,7 +30,7 @@ ext {
 }
 
 dependencies {
-    implementation 'com.github.smartlogismsa:common-module:0.0.2'
+    implementation 'com.github.smartlogismsa:common-module:0.0.6'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
