@@ -45,4 +45,8 @@ public class Hub extends AbstractEntity {
         this.location = location;
         this.status = status;
     }
+
+    public void softDelete() {
+        super.delete();
+    }
 }
