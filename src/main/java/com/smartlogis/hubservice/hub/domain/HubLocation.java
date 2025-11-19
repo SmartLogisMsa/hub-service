@@ -3,11 +3,13 @@ package com.smartlogis.hubservice.hub.domain;
 import com.smartlogis.hubservice.hub.domain.exception.HubAddressInvalidException;
 import com.smartlogis.hubservice.hub.domain.exception.HubInvalidLocationException;
 import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
+import com.smartlogis.hubservice.hub.infrastructure.type.PostgresVectorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
 
 @Getter
 @Embeddable
@@ -23,7 +25,8 @@ public class HubLocation {
     @Column(nullable = false)
     private double longitude;
 
-    @Column(name = "location_vec", columnDefinition = "vector(2)", nullable = false)
+    @Column(name = "location_vec", columnDefinition = "vector(2)")
+    @JdbcType(PostgresVectorType.class)
     private float[] locationVec;
 
     public HubLocation(String address, double latitude, double longitude) {
@@ -32,7 +35,10 @@ public class HubLocation {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.locationVec = new float[] { (float) latitude, (float) longitude };
+        this.locationVec = new float[]{
+                (float) latitude,
+                (float) longitude
+        };
     }
 
     private void validate(String address, double latitude, double longitude) {
