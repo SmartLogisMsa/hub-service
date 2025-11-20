@@ -4,8 +4,10 @@ import com.smartlogis.common.presentation.ApiResponse;
 import com.smartlogis.hubservice.hub.application.service.HubCreateService;
 import com.smartlogis.hubservice.hub.application.service.HubDeleteService;
 import com.smartlogis.hubservice.hub.application.service.HubUpdateService;
+import com.smartlogis.hubservice.hub.application.service.HubUpdateStatusService;
 import com.smartlogis.hubservice.hub.presentation.dto.HubCreateRequest;
 import com.smartlogis.hubservice.hub.presentation.dto.HubResponse;
+import com.smartlogis.hubservice.hub.presentation.dto.HubStatusUpdateRequest;
 import com.smartlogis.hubservice.hub.presentation.dto.HubUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class HubController {
     private final HubCreateService hubCreateService;
     private final HubUpdateService hubUpdateService;
     private final HubDeleteService hubDeleteService;
-
+    private final HubUpdateStatusService hubUpdateStatusService;
     // 허브 생성
     @PostMapping
     public ResponseEntity<ApiResponse<HubResponse>> createHub(
@@ -48,4 +50,15 @@ public class HubController {
         hubDeleteService.delete(id);
         return ResponseEntity.ok(ApiResponse.success());
     }
+
+    // 허브 상태 변경
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Void>> updateStatus(
+            @PathVariable String id,
+            @RequestBody HubStatusUpdateRequest request
+    ) {
+        hubUpdateStatusService.updateStatus(id, request.status());
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
 }
