@@ -68,9 +68,18 @@ public class HubQueryRepositoryImpl implements HubQueryRepository {
 
         QHub hub = QHub.hub;
 
+        int size = request.getSize();
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
 
         // 기본 조건: 삭제되지 않은 허브만 조회
         BooleanExpression condition = hub.deletedAt.isNull();
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                request.getPage(),
+                size
+        );
 
         // 통합 검색 조건: keyword가 있으면 이름/주소/상태 중 하나라도 포함되는 데이터만 조회
         if (keyword != null && !keyword.isBlank()) {
@@ -80,10 +89,6 @@ public class HubQueryRepositoryImpl implements HubQueryRepository {
                             .or(hub.status.stringValue().containsIgnoreCase(keyword))
             );
         }
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(
-                request.getPage(),
-                request.getSize()
-        );
 
         List<HubListResponse> content = query
                 .select(Projections.constructor(
@@ -98,6 +103,7 @@ public class HubQueryRepositoryImpl implements HubQueryRepository {
                 ))
                 .from(hub)
                 .where(condition)
+                .orderBy(hub.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
