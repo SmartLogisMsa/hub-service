@@ -1,4 +1,4 @@
-package com.smartlogis.hubservice.config;
+package com.smartlogis.hubservice.config.template;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

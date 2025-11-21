@@ -47,6 +47,11 @@ public class Hub extends AbstractEntity {
     }
 
     public void softDelete() {
+        this.status = HubStatus.DELETED;
         super.delete();
+    }
+
+    public void updateStatus(HubStatus newStatus) {
+        this.status = newStatus;
     }
 }
