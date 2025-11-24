@@ -28,4 +28,15 @@ public class HubRoute extends AbstractEntity {
         this.routeInfo = routeInfo;
     }
 
+    public void updateInfo(RouteInfo newInfo) {
+        this.routeInfo = newInfo;
+    }
+
+    public void updateConnection(HubConnection newConnection) {
+        this.connection = newConnection;
+    }
+
+    public void softDelete() {
+        super.delete();
+    }
 }
