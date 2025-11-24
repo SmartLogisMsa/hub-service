@@ -59,7 +59,7 @@ public class HubRouteCreateService {
             throw new HubRouteDirectionApiFailedException(HubRouteMessageCode.HUB_ROUTE_DIRECTION_API_FAILED);
         }
 
-        // 3. 50km 이하 → P2P
+        // 3. P2P_DISTANCE_THRESHOLD_KM 이하 → P2P
         if (directInfo.getExpectedDistanceKm().doubleValue() <= P2P_DISTANCE_THRESHOLD_KM) {
 
             HubConnection connection = new HubConnection(
@@ -77,7 +77,7 @@ public class HubRouteCreateService {
             return hubRouteRepository.save(route);
         }
 
-        // 4. 50km 초과 → Relay
+        // 4. P2P_DISTANCE_THRESHOLD_KM 초과 → Relay
         Hub relayHub = relayHubFinder.findRelayHub(startHub, endHub);
         if (relayHub == null) {
             throw new HubRouteRelayHubNotFoundException(HubRouteMessageCode.HUB_ROUTE_RELAY_HUB_NOT_FOUND);

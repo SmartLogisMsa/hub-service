@@ -67,7 +67,7 @@ public class HubRouteRecalculateService {
         }
 
         // ────────────────────────────────
-        // 2) 100km 이하 → P2P
+        // 2) P2P_DISTANCE_THRESHOLD_KM 이하 → P2P
         // ────────────────────────────────
         if (directInfo.getExpectedDistanceKm().doubleValue() <= P2P_DISTANCE_THRESHOLD_KM) {
 

@@ -26,38 +26,28 @@ public class HubRouteController {
     public ResponseEntity<ApiResponse<HubRouteResponse>> create(
             @Valid @RequestBody HubRouteCreateRequest request
     ) {
-
-        var route = hubRouteCreateService.createRoute(
-                request.startHubId(),
-                request.endHubId()
+        HubRouteResponse response = HubRouteMapper.from(
+                hubRouteCreateService.createRoute(
+                        request.startHubId(),
+                        request.endHubId()
+                )
         );
-
-        ApiResponse<HubRouteResponse> body = ApiResponse.successWithDataOnly(
-                HubRouteMapper.from(route)
-        );
-
-        return ResponseEntity.ok(
-                ApiResponse.successWithDataOnly(HubRouteMapper.from(route))
-        );
+        return ResponseEntity.ok(ApiResponse.successWithDataOnly(response));
     }
 
     @PutMapping("/{id}/recalculate")
-    public ResponseEntity<ApiResponse<HubRouteResponse>> recalculate(@PathVariable String id) {
-
-        var route = hubRouteRecalculateService.recalculate(id);
-
-        return ResponseEntity.ok(
-                ApiResponse.successWithDataOnly(
-                        HubRouteMapper.from(route)
-                )
+    public ResponseEntity<ApiResponse<HubRouteResponse>> recalculate(
+            @PathVariable String id
+    ) {
+        HubRouteResponse response = HubRouteMapper.from(
+                hubRouteRecalculateService.recalculate(id)
         );
+        return ResponseEntity.ok(ApiResponse.successWithDataOnly(response));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteRoute(@PathVariable String id) {
-
         hubRouteDeleteService.delete(id);
-
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
