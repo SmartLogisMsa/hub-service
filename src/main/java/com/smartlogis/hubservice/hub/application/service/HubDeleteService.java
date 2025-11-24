@@ -7,8 +7,10 @@ import com.smartlogis.hubservice.hub.domain.HubStatus;
 import com.smartlogis.hubservice.hub.domain.exception.HubCannotDeleteActiveException;
 import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
 import com.smartlogis.hubservice.hub.domain.exception.HubNotFoundException;
+import com.smartlogis.hubservice.hub.event.HubDeletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class HubDeleteService {
 
     private final HubRepository hubRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @CacheEvict(value = "hub", key = "#id")
@@ -33,5 +36,7 @@ public class HubDeleteService {
 
         hub.softDelete();
         hubRepository.save(hub);
+
+        publisher.publishEvent(new HubDeletedEvent(hub.getId()));
     }
 }

@@ -1,9 +1,11 @@
 package com.smartlogis.hubservice.hubroute.event;
 
 import com.smartlogis.hubservice.hub.domain.Hub;
+import com.smartlogis.hubservice.hub.domain.HubId;
 import com.smartlogis.hubservice.hub.domain.HubRepository;
 import com.smartlogis.hubservice.hub.domain.HubStatus;
 import com.smartlogis.hubservice.hub.event.HubCreatedEvent;
+import com.smartlogis.hubservice.hub.event.HubDeletedEvent;
 import com.smartlogis.hubservice.hub.event.HubUpdatedEvent;
 import com.smartlogis.hubservice.hubroute.application.service.HubRouteCreateService;
 import com.smartlogis.hubservice.hubroute.application.service.HubRouteRecalculateService;
@@ -150,4 +152,20 @@ public class HubRouteEventHandler {
             }
         }
     }
+
+    @Async
+    @EventListener
+    public void handleHubDeleted(HubDeletedEvent event) {
+
+        HubId hubId = event.hubId();
+
+        // 해당 허브가 포함된 모든 라우트 soft delete
+        List<HubRoute> routes = hubRouteRepository.findAllByHubInvolved(hubId.getId());
+
+        for (HubRoute route : routes) {
+            route.softDelete();
+        }
+        hubRouteRepository.saveAll(routes);
+    }
+
 }
