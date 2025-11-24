@@ -54,9 +54,7 @@ public class HubRouteRecalculateService {
         double endLat = endHub.getLocation().getLatitude();
         double endLng = endHub.getLocation().getLongitude();
 
-        // ────────────────────────────────
         // 1) start → end 직통 계산
-        // ────────────────────────────────
         RouteInfo directInfo = kakaoDirectionsService.getRouteInfo(
                 startLat, startLng,
                 endLat, endLng
@@ -66,9 +64,7 @@ public class HubRouteRecalculateService {
             throw new HubRouteDirectionApiFailedException(HubRouteMessageCode.HUB_ROUTE_DIRECTION_API_FAILED);
         }
 
-        // ────────────────────────────────
         // 2) P2P_DISTANCE_THRESHOLD_KM 이하 → P2P
-        // ────────────────────────────────
         if (directInfo.getExpectedDistanceKm().doubleValue() <= P2P_DISTANCE_THRESHOLD_KM) {
 
             route.updateConnection(new HubConnection(startUUID, endUUID, null));
@@ -76,9 +72,7 @@ public class HubRouteRecalculateService {
             return route;
         }
 
-        // ────────────────────────────────
         // 3) Relay 필요
-        // ────────────────────────────────
         Hub relayHub = relayHubFinder.findRelayHub(startHub, endHub);
         if (relayHub == null) {
             throw new HubRouteRelayHubNotFoundException(HubRouteMessageCode.HUB_ROUTE_RELAY_HUB_NOT_FOUND);
