@@ -1,5 +1,6 @@
 package com.smartlogis.hubservice.hub.application.service;
 
+import com.smartlogis.hubservice.hub.application.publisher.HubDeletedEventPublisher;
 import com.smartlogis.hubservice.hub.domain.Hub;
 import com.smartlogis.hubservice.hub.domain.HubId;
 import com.smartlogis.hubservice.hub.domain.HubRepository;
@@ -22,6 +23,7 @@ public class HubDeleteService {
 
     private final HubRepository hubRepository;
     private final ApplicationEventPublisher publisher;
+    private final HubDeletedEventPublisher rabbitPublisher;
 
     @Transactional
     @CacheEvict(value = "hub", key = "#id")
@@ -38,5 +40,8 @@ public class HubDeleteService {
         hubRepository.save(hub);
 
         publisher.publishEvent(new HubDeletedEvent(hub.getId()));
+
+        // company-service로 RabbitMQ 이벤트 발행
+        rabbitPublisher.publishHubDeleted(hub.getId().getId());
     }
 }
