@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface HubRepository extends JpaRepository<Hub, HubId> {
     Optional<Hub> findByIdAndDeletedAtIsNull(HubId id);
+
+    Optional<Hub> findByIdAndStatusAndDeletedAtIsNull(HubId id, HubStatus status);
 }

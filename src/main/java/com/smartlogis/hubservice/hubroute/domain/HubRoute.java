@@ -21,4 +21,11 @@ public class HubRoute extends AbstractEntity {
 
     @Embedded
     private RouteInfo routeInfo;
+
+    public HubRoute(HubRouteId id, HubConnection connection, RouteInfo routeInfo) {
+        this.id = id;
+        this.connection = connection;
+        this.routeInfo = routeInfo;
+    }
+
 }

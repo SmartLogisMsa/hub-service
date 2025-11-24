@@ -6,9 +6,11 @@ import com.smartlogis.hubservice.hubroute.domain.exception.HubRouteMessageCode;
 import com.smartlogis.hubservice.hubroute.domain.exception.HubRouteStartHubInvalidException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @Embeddable
 public class HubConnection {
 
