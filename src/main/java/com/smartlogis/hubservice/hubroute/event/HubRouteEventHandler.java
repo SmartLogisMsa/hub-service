@@ -90,6 +90,11 @@ public class HubRouteEventHandler {
             return;
         }
 
+        if (event.statusChanged()) {
+            handleStatusChange(hub);
+            return;
+        }
+
         // 위치 변경 → 해당 허브가 포함된 모든 라우트 재계산
         if (event.locationChanged()) {
             List<HubRoute> routes =
@@ -108,11 +113,6 @@ public class HubRouteEventHandler {
                     );
                 }
             }
-        }
-
-        // 상태 변경 → 공통 상태 변경 로직 처리
-        if (event.statusChanged()) {
-            handleStatusChange(hub);
         }
     }
 
