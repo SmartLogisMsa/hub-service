@@ -1,4 +1,3 @@
-// hubservice 쪽: 허브 → 배송으로 보낼 이벤트 DTO
 package com.smartlogis.hubservice.hubroute.event.message;
 
 import java.util.List;
