@@ -37,17 +37,23 @@ public class HubRouteRecalculateService {
         UUID startUUID = route.getConnection().getStartHubId();
         UUID endUUID = route.getConnection().getEndHubId();
 
-        Hub startHub = hubRepository.findByIdAndStatusAndDeletedAtIsNull(
-                HubId.of(startUUID), HubStatus.ACTIVE
+        Hub startHub = hubRepository.findByIdAndDeletedAtIsNull(
+                HubId.of(startUUID)
         ).orElseThrow(() ->
                 new HubRouteStartHubNotFoundException(HubRouteMessageCode.HUB_ROUTE_START_HUB_NOT_FOUND)
         );
 
-        Hub endHub = hubRepository.findByIdAndStatusAndDeletedAtIsNull(
-                HubId.of(endUUID), HubStatus.ACTIVE
+        Hub endHub = hubRepository.findByIdAndDeletedAtIsNull(
+                HubId.of(endUUID)
         ).orElseThrow(() ->
                 new HubRouteEndHubNotFoundException(HubRouteMessageCode.HUB_ROUTE_END_HUB_NOT_FOUND)
         );
+
+        if (startHub.getStatus() != HubStatus.ACTIVE ||
+                endHub.getStatus() != HubStatus.ACTIVE) {
+
+            return route;
+        }
 
         double startLat = startHub.getLocation().getLatitude();
         double startLng = startHub.getLocation().getLongitude();
