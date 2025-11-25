@@ -7,6 +7,8 @@ import com.smartlogis.hubservice.hub.domain.HubStatus;
 import com.smartlogis.hubservice.hub.domain.exception.HubCannotSetDeletedByPatchException;
 import com.smartlogis.hubservice.hub.domain.exception.HubMessageCode;
 import com.smartlogis.hubservice.hub.domain.exception.HubNotFoundException;
+import com.smartlogis.hubservice.hub.event.HubStatusChangedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class HubUpdateStatusService {
 
     private final HubRepository hubRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void updateStatus(String id, HubStatus newStatus) {
@@ -33,5 +36,12 @@ public class HubUpdateStatusService {
 
         // 상태 변경
         hub.updateStatus(newStatus);
+
+        applicationEventPublisher.publishEvent(
+                new HubStatusChangedEvent(
+                        hub.getId(),
+                        hub.getStatus()
+                )
+        );
     }
 }

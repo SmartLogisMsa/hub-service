@@ -10,4 +10,5 @@ public interface HubQueryRepository {
     HubDetailResponse findById(String id);
 
     PageResponse<HubListResponse> findAll(PageRequest request, String keyword);
+
 }
