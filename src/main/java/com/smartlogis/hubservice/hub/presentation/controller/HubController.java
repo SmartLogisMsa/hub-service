@@ -9,10 +9,12 @@ import com.smartlogis.hubservice.hub.presentation.dto.HubCreateRequest;
 import com.smartlogis.hubservice.hub.presentation.dto.HubResponse;
 import com.smartlogis.hubservice.hub.presentation.dto.HubStatusUpdateRequest;
 import com.smartlogis.hubservice.hub.presentation.dto.HubUpdateRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,7 +27,9 @@ public class HubController {
     private final HubUpdateService hubUpdateService;
     private final HubDeleteService hubDeleteService;
     private final HubUpdateStatusService hubUpdateStatusService;
-    // 허브 생성
+
+    @Operation(summary = "허브 생성", description = "새로운 허브를 생성합니다.")
+    @PreAuthorize("hasAnyRole('MASTER')")
     @PostMapping
     public ResponseEntity<ApiResponse<HubResponse>> createHub(
             @Valid @RequestBody HubCreateRequest request
@@ -34,7 +38,8 @@ public class HubController {
         return ResponseEntity.ok(ApiResponse.successWithDataOnly(response));
     }
 
-    // 허브 수정
+    @Operation(summary = "허브 수정", description = "허브 정보를 수정합니다.")
+    @PreAuthorize("hasAnyRole('MASTER')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<HubResponse>> updateHub(
             @PathVariable("id") String id,
@@ -44,14 +49,18 @@ public class HubController {
         return ResponseEntity.ok(ApiResponse.successWithDataOnly(response));
     }
 
-    // 허브 삭제
+
+    @Operation(summary = "허브 삭제", description = "허브를 삭제합니다. (Soft Delete)")
+    @PreAuthorize("hasAnyRole('MASTER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteHub(@PathVariable String id) {
         hubDeleteService.delete(id);
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    // 허브 상태 변경
+
+    @Operation(summary = "허브 상태 변경", description = "허브 상태(ACTIVE/INACTIVE)를 변경합니다.")
+    @PreAuthorize("hasAnyRole('MASTER')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApiResponse<Void>> updateStatus(
             @PathVariable String id,
