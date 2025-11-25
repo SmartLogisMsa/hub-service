@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ProductOrderEventListener {
 
-    private final RouteResolver routeResolver;                 // 3단계에서 만들 것
-    private final DeliveryRouteEventPublisher routePublisher;  // 4단계에서 만들 것
+    private final RouteResolver routeResolver;
+    private final DeliveryRouteEventPublisher routePublisher;
 
     @RabbitListener(queues = "smartlogis.product.order.created.queue")
     public void onProductOrderCreated(ProductToHubRouteEvent event) {
