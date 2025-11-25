@@ -16,10 +16,7 @@ import com.smartlogis.hubservice.hubroute.domain.HubRouteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
@@ -39,7 +36,6 @@ public class HubRouteEventHandler {
      *   모든 ACTIVE 허브 간 라우트를 양방향으로 생성
      */
     @EventListener
-    @Async
     public void handleHubCreated(HubCreatedEvent event) {
 
         Hub newHub = hubRepository.findByIdAndStatusAndDeletedAtIsNull(
@@ -64,12 +60,10 @@ public class HubRouteEventHandler {
                         newHub.getId().getId().toString(),
                         hub.getId().getId().toString()
                 );
-
                 hubRouteCreateService.createRoute(
                         hub.getId().getId().toString(),
                         newHub.getId().getId().toString()
                 );
-
             } catch (Exception e) {
                 log.warn(
                         "[HubRouteEvent] Route 생성 실패 start={} end={} message={}",
@@ -86,9 +80,7 @@ public class HubRouteEventHandler {
      * - locationChanged: 허브 위치 변경 시 해당 허브가 포함된 모든 라우트 재계산
      * - statusChanged : 상태 변경 시 라우트 상태 처리 (ACTIVE/INACTIVE)
      */
-
     @EventListener
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleHubUpdated(HubUpdatedEvent event) {
 
         Hub hub = hubRepository.findById(event.hubId()).orElse(null);
@@ -185,7 +177,6 @@ public class HubRouteEventHandler {
      * - 해당 허브가 포함된 모든 라우트 soft delete
      */
     @EventListener
-    @Async
     public void handleHubDeleted(HubDeletedEvent event) {
 
         HubId hubId = event.hubId();
@@ -205,7 +196,6 @@ public class HubRouteEventHandler {
      *   handleStatusChange 를 사용하여 처리
      */
     @EventListener
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleHubStatusChanged(HubStatusChangedEvent event) {
 
         Hub hub = hubRepository.findById(event.hubId()).orElse(null);
@@ -225,4 +215,5 @@ public class HubRouteEventHandler {
             );
         }
     }
+
 }
