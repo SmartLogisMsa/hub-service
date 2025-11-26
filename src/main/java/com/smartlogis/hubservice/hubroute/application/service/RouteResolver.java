@@ -1,5 +1,6 @@
 package com.smartlogis.hubservice.hubroute.application.service;
 
+import com.smartlogis.hubservice.hub.application.service.HubQueryService;
 import com.smartlogis.hubservice.hubroute.presentation.dto.HubRouteDetailQueryResponse;
 import com.smartlogis.hubservice.hubroute.event.message.DeliveryRouteEvent.RouteInfo;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RouteResolver {
 
     private final HubRouteQueryService hubRouteQueryService;
+    private final HubQueryService hubQueryService;
 
     public List<RouteInfo> resolve(UUID startHubId, UUID endHubId) {
         List<RouteInfo> flatRoutes = new ArrayList<>();
 
-        // (1) 재귀적으로 허브 경로를 단일 hop 리스트로 분해
         resolveRecursive(startHubId, endHubId, flatRoutes);
 
-        // (2) sequence 번호 부여
         AtomicInteger seq = new AtomicInteger(1);
         flatRoutes.forEach(r -> r.setSequence(seq.getAndIncrement()));
 
@@ -31,15 +31,23 @@ public class RouteResolver {
 
     private void resolveRecursive(UUID startHubId, UUID endHubId, List<RouteInfo> collector) {
 
-        // DB에서 start → end 구간 조회
         HubRouteDetailQueryResponse route = hubRouteQueryService.findDetail(startHubId, endHubId);
 
         // 중간 허브가 없는 경우 → 단일 hop
         if (route.relayHubId() == null) {
+
+            // 허브 주소 조회
+            String departureAddress =
+                    hubQueryService.getAddressByHubId(route.startHubId().toString());
+            String destinationAddress =
+                    hubQueryService.getAddressByHubId(route.endHubId().toString());
+
             collector.add(
                     RouteInfo.builder()
                             .departureHubId(route.startHubId())
+                            .departureAddress(departureAddress)
                             .destinationHubId(route.endHubId())
+                            .destinationAddress(destinationAddress)
                             .expectedDistanceKm(route.expectedDistanceKm())
                             .expectedDurationMin(route.expectedDurationMin())
                             .build()

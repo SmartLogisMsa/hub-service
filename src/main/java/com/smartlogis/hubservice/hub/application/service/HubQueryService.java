@@ -25,4 +25,8 @@ public class HubQueryService {
         return hubQueryRepository.findAll(pageRequest, searchRequest.keyword());
     }
 
+    public String getAddressByHubId(String hubId) {
+        HubDetailResponse hub = hubQueryRepository.findById(hubId);
+        return hub != null ? hub.address() : null;
+    }
 }
