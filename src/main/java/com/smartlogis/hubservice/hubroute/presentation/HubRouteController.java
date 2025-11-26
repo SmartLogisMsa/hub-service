@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/v1/hub-routes")
+@RequestMapping("/v1/hubs/routes")
 @RequiredArgsConstructor
 public class HubRouteController {
 
