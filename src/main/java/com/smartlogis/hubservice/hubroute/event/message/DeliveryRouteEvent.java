@@ -29,8 +29,13 @@ public class DeliveryRouteEvent {
     @Builder
     public static class RouteInfo {
         private Integer sequence;
+
         private UUID departureHubId;
+        private String departureAddress;
+
         private UUID destinationHubId;
+        private String destinationAddress;
+
         private BigDecimal expectedDistanceKm;
         private Integer expectedDurationMin;
     }
