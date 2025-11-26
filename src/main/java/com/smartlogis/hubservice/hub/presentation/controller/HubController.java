@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/hubs")
 @RequiredArgsConstructor
 public class HubController {
 
