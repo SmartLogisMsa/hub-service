@@ -5,7 +5,7 @@ on:
 
 env:
   REGISTRY: ghcr.io # 깃허브 컨테이너 저장소를 사용한다.
-  IMAGE_NAME: smartLogis/hub-service
+  IMAGE_NAME: smartlogis/hub-service
   VERSION: latest
 
 jobs:
