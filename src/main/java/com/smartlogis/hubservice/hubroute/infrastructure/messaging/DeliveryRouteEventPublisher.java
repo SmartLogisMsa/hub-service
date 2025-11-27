@@ -22,7 +22,13 @@ public class DeliveryRouteEventPublisher {
 
         log.info("[허브 → 배송] DeliveryRouteEvent 발행 orderId={}, productId={}",
                 event.getOrderId(), event.getProductId());
-
+        if (event.getRoutes() == null) {
+            log.warn("[허브 → 배송] routes=null");
+        } else {
+            log.info("[허브 → 배송] routes size={} / routes={}",
+                    event.getRoutes().size(),
+                    event.getRoutes());
+        }
         rabbitTemplate.convertAndSend(
                 DELIVERY_ROUTE_EXCHANGE,
                 DELIVERY_ROUTE_CREATED_ROUTING_KEY,
