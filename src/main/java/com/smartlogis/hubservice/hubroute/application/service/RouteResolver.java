@@ -19,80 +19,69 @@ public class RouteResolver {
     private final HubQueryService hubQueryService;
 
     public List<RouteInfo> resolve(UUID startHubId, UUID endHubId) {
-        List<RouteInfo> flatRoutes = new ArrayList<>();
 
-        Set<UUID> visitedHubs = new HashSet<>();      // 허브 단위 방문 체크
-        Set<String> visitedEdges = new HashSet<>();   // 기존 start->end 조합 방문 체크
+        List<RouteInfo> result = new ArrayList<>();
 
-        resolveRecursive(startHubId, endHubId, flatRoutes, visitedHubs, visitedEdges);
+        // 전체 경로 조회 로그
+        log.info("[RouteResolver] 전체 경로 조회 start={} end={}", startHubId, endHubId);
 
-        AtomicInteger seq = new AtomicInteger(1);
-        flatRoutes.forEach(r -> r.setSequence(seq.getAndIncrement()));
-
-        return flatRoutes;
-    }
-
-    private void resolveRecursive(
-            UUID startHubId,
-            UUID endHubId,
-            List<RouteInfo> collector,
-            Set<UUID> visitedHubs,
-            Set<String> visitedEdges
-    ) {
-        String edgeKey = startHubId + "->" + endHubId;
-
-        if (!visitedHubs.add(startHubId)) {
-            log.error("허브 중복 방문 감지: {}", startHubId);
-            return;
-        }
-
-        if (!visitedEdges.add(edgeKey)) {
-            log.error("조합 중복 방문 감지: {}", edgeKey);
-            return;
-        }
-
-        HubRouteDetailQueryResponse route =
+        HubRouteDetailQueryResponse fullRoute =
                 hubRouteQueryService.findDetail(startHubId, endHubId);
 
-        // relay 없는 단일 hop
-        if (route.relayHubId() == null) {
-            addSegment(route, collector);
-            return;
+        log.info("[RouteResolver] 전체 경로 결과: {}", fullRoute);
+
+        UUID relay = fullRoute.relayHubId();
+
+        if (relay == null) {
+            log.info("[RouteResolver] 릴레이 없음 → 단일 hop 생성 start={} → end={}", startHubId, endHubId);
+            result.add(buildHop(startHubId, endHubId));
+        } else {
+            log.info("[RouteResolver] 릴레이 있음 relay={} → 두 hop 생성", relay);
+
+            // A → relay hop
+            result.add(buildHop(startHubId, relay));
+
+            // relay → C hop
+            result.add(buildHop(relay, endHubId));
         }
 
-        UUID relay = route.relayHubId();
+        AtomicInteger seq = new AtomicInteger(1);
+        result.forEach(r -> r.setSequence(seq.getAndIncrement()));
 
-        // relay 허브 이미 방문한 경우 중단
-        if (visitedHubs.contains(relay)) {
-            log.error("릴레이 허브 중복 방문 감지: {}", relay);
-            return;
-        }
+        log.info("[RouteResolver] 최종 결과 routes={}", result);
 
-        // 좌측: start → relay
-        resolveRecursive(startHubId, relay, collector, visitedHubs, visitedEdges);
-
-        // 우측: relay → end
-        resolveRecursive(relay, endHubId, collector, visitedHubs, visitedEdges);
+        return result;
     }
 
-    private void addSegment(HubRouteDetailQueryResponse route,
-                            List<RouteInfo> collector) {
+    private RouteInfo buildHop(UUID startHubId, UUID endHubId) {
+
+        log.info("[RouteResolver][hop] hop 조회 시작 start={} → end={}", startHubId, endHubId);
+
+        HubRouteDetailQueryResponse hopRoute =
+                hubRouteQueryService.findDetail(startHubId, endHubId);
+
+        log.info("[RouteResolver][hop] hop DB 조회 결과: {}", hopRoute);
 
         String departureAddress =
-                hubQueryService.getAddressByHubId(route.startHubId().toString());
+                hubQueryService.getAddressByHubId(startHubId.toString());
         String destinationAddress =
-                hubQueryService.getAddressByHubId(route.endHubId().toString());
+                hubQueryService.getAddressByHubId(endHubId.toString());
 
-        collector.add(
-                RouteInfo.builder()
-                        .departureHubId(route.startHubId())
-                        .departureAddress(departureAddress)
-                        .destinationHubId(route.endHubId())
-                        .destinationAddress(destinationAddress)
-                        .expectedDistanceKm(route.expectedDistanceKm())
-                        .expectedDurationMin(route.expectedDurationMin())
-                        .build()
-        );
+        log.info("[RouteResolver][hop] 주소 조회: departureAddress='{}', destinationAddress='{}'",
+                departureAddress, destinationAddress);
+
+        RouteInfo info = RouteInfo.builder()
+                .departureHubId(startHubId)
+                .departureHubAddress(departureAddress)
+                .destinationHubId(endHubId)
+                .destinationHubAddress(destinationAddress)
+                .expectedDistanceKm(hopRoute.expectedDistanceKm())
+                .expectedDurationMin(hopRoute.expectedDurationMin())
+                .build();
+
+        log.info("[RouteResolver][hop] 최종 hop 데이터: {}", info);
+
+        return info;
     }
 
 }
