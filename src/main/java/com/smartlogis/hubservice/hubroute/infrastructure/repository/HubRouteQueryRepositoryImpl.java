@@ -49,7 +49,9 @@ public class HubRouteQueryRepositoryImpl implements HubRouteQueryRepository {
                 ))
                 .from(hubRoute)
                 .where(condition)
-                .fetchOne();
+                .orderBy(hubRoute.createdAt.desc())
+                .limit(1)
+                .fetchFirst();
     }
 
     @Override
